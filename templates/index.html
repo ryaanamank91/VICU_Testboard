@@ -1,62 +1,62 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
     <title>Vehicle Dashboard</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #f5f5f5;
+            background-color: #f4f4f4;
             margin: 0;
         }
-        .navbar {
+        .header {
             background-color: #000;
+            color: white;
+            padding: 12px;
             text-align: center;
-            padding: 10px;
         }
-        .navbar img {
-            height: 30px;
-        }
-        .dashboard {
-            max-width: 600px;
+        .card {
+            max-width: 400px;
             background: white;
             margin: 40px auto;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 25px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border-radius: 12px;
         }
-        .item { margin: 5px 0; }
-        .label { font-weight: bold; }
-        #map { height: 200px; margin-top: 15px; }
+        #map {
+            height: 250px;
+            margin-top: 15px;
+            border-radius: 8px;
+        }
     </style>
 </head>
 <body>
-    <div class="navbar">
-        <img src="{{ url_for('static', filename='images/LOGO_HORIZONTAL_WHITE.svg') }}" alt="Logo">
+    <div class="header">
+        <img src="/static/images/LOGO_HORIZONTAL_WHITE.svg" height="32" alt="SCAI Logo" />
     </div>
-
-    <div class="dashboard">
+    <div class="card">
         <h3>Vehicle Data Dashboard</h3>
-        <div class="item"><span class="label">Timestamp:</span> {{ data.timestamp }}</div>
-        <div class="item"><span class="label">Vehicle ID:</span> {{ data.vehicle_id }}</div>
-        <div class="item"><span class="label">Engine RPM:</span> {{ data.data.engine_speed_rpm }}</div>
-        <div class="item"><span class="label">Speed (km/h):</span> {{ data.data.vehicle_speed_kmh }}</div>
-        <div class="item"><span class="label">Battery Voltage:</span> {{ data.data.battery_voltage }} V</div>
-        <div class="item"><span class="label">Fuel Level:</span> {{ data.data.fuel_level }} %</div>
-        <div class="item"><span class="label">Engine Temp:</span> {{ data.data.engine_temp }} °C</div>
-        <div class="item"><span class="label">GPS:</span> Lat: {{ data.data.gps.lat }}, Lon: {{ data.data.gps.lon }}</div>
-        <div class="item"><span class="label">Ignition:</span> {{ 'ON' if data.data.ignition_on else 'OFF' }}</div>
+        <p><strong>Timestamp:</strong> {{ data.timestamp }}</p>
+        <p><strong>Vehicle ID:</strong> {{ data.vehicle_id }}</p>
+        <p><strong>Engine RPM:</strong> {{ data.engine_speed_rpm }}</p>
+        <p><strong>Speed (km/h):</strong> {{ data.speed }}</p>
+        <p><strong>Mileage (km):</strong> {{ data.mileage }}</p>
+        <p><strong>Battery Voltage:</strong> {{ data.battery_voltage }} V</p>
+        <p><strong>Fuel Level:</strong> {{ data.fuel_level }} %</p>
+        <p><strong>Engine Temp:</strong> {{ data.engine_temp }} °C</p>
+        <p><strong>GPS:</strong> Lat: {{ data.latitude }}, Lon: {{ data.longitude }}</p>
+        <p><strong>Ignition:</strong> {{ data.ignition }}</p>
+
         <div id="map"></div>
     </div>
 
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
     <script>
-        const lat = {{ data.data.gps.lat }};
-        const lon = {{ data.data.gps.lon }};
-        const map = L.map('map').setView([lat, lon], 13);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(map);
-        L.marker([lat, lon]).addTo(map);
+        var map = L.map('map').setView([{{ data.latitude }}, {{ data.longitude }}], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+        L.marker([{{ data.latitude }}, {{ data.longitude }}]).addTo(map);
     </script>
 </body>
 </html>

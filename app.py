@@ -2,7 +2,19 @@ from flask import Flask, request, render_template
 from datetime import datetime
 
 app = Flask(__name__)
-latest_data = {}
+latest_data = {
+    "vehicle_id": "N/A",
+    "engine_speed_rpm": 0,
+    "speed": 0,
+    "mileage": 0,
+    "battery_voltage": 0.0,
+    "fuel_level": 0,
+    "engine_temp": 0,
+    "latitude": 0.0,
+    "longitude": 0.0,
+    "ignition": "OFF",
+    "timestamp": "N/A"
+}
 
 @app.route('/')
 def dashboard():
@@ -11,11 +23,8 @@ def dashboard():
 @app.route('/data', methods=['POST'])
 def receive_data():
     global latest_data
-    latest_data = request.get_json()
-    latest_data['timestamp'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print("Data received:", latest_data)
+    new_data = request.get_json()
+    new_data["timestamp"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    latest_data.update(new_data)
+    print("Updated Data:", latest_data)
     return "OK", 200
-
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=10000)
