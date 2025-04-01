@@ -1,52 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <title>Vehicle Dashboard</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <style>
         body {
-            background-color: #f5f5f5;
             font-family: Arial, sans-serif;
+            background: #f5f5f5;
             margin: 0;
-            padding: 0;
         }
-
         .navbar {
             background-color: #000;
-            padding: 10px;
             text-align: center;
+            padding: 10px;
         }
-
         .navbar img {
             height: 30px;
         }
-
         .dashboard {
-            background: #fff;
-            padding: 20px;
-            max-width: 500px;
+            max-width: 600px;
+            background: white;
             margin: 40px auto;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
             border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-
-        .item {
-            margin: 5px 0;
-        }
-
-        .label {
-            font-weight: bold;
-        }
-
-        #map {
-            height: 200px;
-            margin-top: 15px;
-        }
+        .item { margin: 5px 0; }
+        .label { font-weight: bold; }
+        #map { height: 200px; margin-top: 15px; }
     </style>
 </head>
-
 <body>
     <div class="navbar">
         <img src="{{ url_for('static', filename='images/LOGO_HORIZONTAL_WHITE.svg') }}" alt="Logo">
@@ -54,55 +38,25 @@
 
     <div class="dashboard">
         <h3>Vehicle Data Dashboard</h3>
-        <div class="item"><span class="label">Timestamp:</span> <span id="timestamp"></span></div>
-        <div class="item"><span class="label">Vehicle ID:</span> <span id="vehicle_id"></span></div>
-        <div class="item"><span class="label">Engine RPM:</span> <span id="rpm"></span></div>
-        <div class="item"><span class="label">Speed (km/h):</span> <span id="speed"></span></div>
-        <div class="item"><span class="label">Mileage (km):</span> <span id="mileage"></span></div>
-        <div class="item"><span class="label">Battery Voltage:</span> <span id="battery_voltage"></span> V</div>
-        <div class="item"><span class="label">Fuel Level:</span> <span id="fuel_level"></span> %</div>
-        <div class="item"><span class="label">Engine Temp:</span> <span id="engine_temp"></span> °C</div>
-        <div class="item"><span class="label">GPS:</span> <span id="gps"></span></div>
-        <div class="item"><span class="label">Ignition:</span> <span id="ignition"></span></div>
-
+        <div class="item"><span class="label">Timestamp:</span> {{ data.timestamp }}</div>
+        <div class="item"><span class="label">Vehicle ID:</span> {{ data.vehicle_id }}</div>
+        <div class="item"><span class="label">Engine RPM:</span> {{ data.data.engine_speed_rpm }}</div>
+        <div class="item"><span class="label">Speed (km/h):</span> {{ data.data.vehicle_speed_kmh }}</div>
+        <div class="item"><span class="label">Battery Voltage:</span> {{ data.data.battery_voltage }} V</div>
+        <div class="item"><span class="label">Fuel Level:</span> {{ data.data.fuel_level }} %</div>
+        <div class="item"><span class="label">Engine Temp:</span> {{ data.data.engine_temp }} °C</div>
+        <div class="item"><span class="label">GPS:</span> Lat: {{ data.data.gps.lat }}, Lon: {{ data.data.gps.lon }}</div>
+        <div class="item"><span class="label">Ignition:</span> {{ 'ON' if data.data.ignition_on else 'OFF' }}</div>
         <div id="map"></div>
     </div>
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
-        const map = L.map('map').setView([0, 0], 2);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 18
-        }).addTo(map);
-        let marker = L.marker([0, 0]).addTo(map);
-
-        async function fetchData() {
-            const response = await fetch('/data');
-            const data = await response.json();
-
-            document.getElementById('timestamp').textContent = data.timestamp || '';
-            document.getElementById('vehicle_id').textContent = data.vehicle_id || '';
-            document.getElementById('rpm').textContent = data.data?.engine_speed_rpm || '';
-            document.getElementById('speed').textContent = data.data?.vehicle_speed_kmh || '';
-            document.getElementById('mileage').textContent = data.data?.mileage_km || '';
-            document.getElementById('battery_voltage').textContent = data.data?.battery_voltage || '';
-            document.getElementById('fuel_level').textContent = data.data?.fuel_level || '';
-            document.getElementById('engine_temp').textContent = data.data?.engine_temp || '';
-            document.getElementById('ignition').textContent = data.data?.ignition_on ? 'ON' : 'OFF';
-
-            const gps = data.data?.gps;
-            if (gps) {
-                const lat = gps.lat || 0;
-                const lon = gps.lon || 0;
-                document.getElementById('gps').textContent = `Lat: ${lat}, Lon: ${lon}`;
-                marker.setLatLng([lat, lon]);
-                map.setView([lat, lon], 12);
-            }
-        }
-
-        setInterval(fetchData, 1000);
-        fetchData();
+        const lat = {{ data.data.gps.lat }};
+        const lon = {{ data.data.gps.lon }};
+        const map = L.map('map').setView([lat, lon], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(map);
+        L.marker([lat, lon]).addTo(map);
     </script>
 </body>
-
 </html>
