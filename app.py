@@ -26,5 +26,5 @@ def receive_data():
     new_data = request.get_json()
     new_data["timestamp"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     latest_data.update(new_data)
-    print("Updated Data:", latest_data)
+    print("Data updated:", latest_data)
     return "OK", 200
