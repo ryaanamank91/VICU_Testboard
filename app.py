@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template
 from datetime import datetime
+import os
 
 app = Flask(__name__)
 latest_data = {
@@ -23,7 +24,6 @@ def receive_data():
     global latest_data
     json_data = request.get_json()
 
-    # Merge new data into the latest_data structure
     if "data" in json_data:
         latest_data.update(json_data["data"])
         latest_data["timestamp"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -32,4 +32,7 @@ def receive_data():
 
     return "OK", 200
 
-# Don't run app.run() here. Render auto-handles this. Just push this file.
+
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 10000))
+    app.run(host='0.0.0.0', port=port)
