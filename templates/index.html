@@ -2,61 +2,52 @@
 <html>
 <head>
     <title>Vehicle Dashboard</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+    <meta charset="UTF-8">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
+            font-family: Arial;
+            background: #f5f5f5;
+            padding: 20px;
         }
-        .header {
-            background-color: #000;
-            color: white;
-            padding: 12px;
-            text-align: center;
-        }
-        .card {
-            max-width: 400px;
+        .dashboard {
             background: white;
-            margin: 40px auto;
-            padding: 25px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            border-radius: 12px;
-        }
-        #map {
-            height: 250px;
-            margin-top: 15px;
+            max-width: 600px;
+            margin: auto;
+            padding: 30px;
             border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
+        .dashboard h2 { margin-bottom: 20px; }
+        .item { margin-bottom: 10px; }
+        .item span { font-weight: bold; }
+        #map { height: 200px; }
     </style>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"/>
 </head>
 <body>
-    <div class="header">
-        <img src="/static/images/LOGO_HORIZONTAL_WHITE.svg" height="32" alt="SCAI Logo" />
-    </div>
-    <div class="card">
-        <h3>Vehicle Data Dashboard</h3>
-        <p><strong>Timestamp:</strong> {{ data.timestamp }}</p>
-        <p><strong>Vehicle ID:</strong> {{ data.vehicle_id }}</p>
-        <p><strong>Engine RPM:</strong> {{ data.engine_speed_rpm }}</p>
-        <p><strong>Speed (km/h):</strong> {{ data.speed }}</p>
-        <p><strong>Mileage (km):</strong> {{ data.mileage }}</p>
-        <p><strong>Battery Voltage:</strong> {{ data.battery_voltage }} V</p>
-        <p><strong>Fuel Level:</strong> {{ data.fuel_level }} %</p>
-        <p><strong>Engine Temp:</strong> {{ data.engine_temp }} °C</p>
-        <p><strong>GPS:</strong> Lat: {{ data.latitude }}, Lon: {{ data.longitude }}</p>
-        <p><strong>Ignition:</strong> {{ data.ignition }}</p>
-
+    <div class="dashboard">
+        <img src="/static/images/LOGO_HORIZONTAL_WHITE.svg" height="40" style="background:#000; padding:10px; border-radius:5px;">
+        <h2>Vehicle Data Dashboard</h2>
+        <div class="item"><span>Timestamp:</span> {{ data.timestamp }}</div>
+        <div class="item"><span>Vehicle ID:</span> {{ data.vehicle_id }}</div>
+        <div class="item"><span>Engine RPM:</span> {{ data.engine_speed_rpm }}</div>
+        <div class="item"><span>Speed (km/h):</span> {{ data.vehicle_speed_kmh }}</div>
+        <div class="item"><span>Mileage (km):</span> {{ data.mileage_km or 0 }}</div>
+        <div class="item"><span>Battery Voltage:</span> {{ data.battery_voltage }} V</div>
+        <div class="item"><span>Fuel Level:</span> {{ data.fuel_level }} %</div>
+        <div class="item"><span>Engine Temp:</span> {{ data.engine_temp }} °C</div>
+        <div class="item"><span>GPS:</span> Lat: {{ data.gps.lat }}, Lon: {{ data.gps.lon }}</div>
+        <div class="item"><span>Ignition:</span> {{ 'ON' if data.ignition_on else 'OFF' }}</div>
         <div id="map"></div>
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
     <script>
-        var map = L.map('map').setView([{{ data.latitude }}, {{ data.longitude }}], 13);
+        var map = L.map('map').setView([{{ data.gps.lat }}, {{ data.gps.lon }}], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
+            attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
-        L.marker([{{ data.latitude }}, {{ data.longitude }}]).addTo(map);
+        L.marker([{{ data.gps.lat }}, {{ data.gps.lon }}]).addTo(map);
     </script>
 </body>
 </html>
